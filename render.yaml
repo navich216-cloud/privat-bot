@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: privat-bot
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python privat.py"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.3"
