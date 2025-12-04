@@ -234,6 +234,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Запуск
 def main():
     import os
+
     PORT = int(os.environ.get("PORT", 10000))
     WEBHOOK_URL = os.environ.get("RENDER_EXTERNAL_URL")
 
@@ -243,7 +244,7 @@ def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     if WEBHOOK_URL:
-        # Webhook для Render
+        # Устанавливаем webhook для Render
         webhook_path = BOT_TOKEN.split(":")[1]
         app.run_webhook(
             listen="0.0.0.0",
