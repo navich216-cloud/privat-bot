@@ -233,18 +233,27 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Запуск
 def main():
+    import os
+    PORT = int(os.environ.get("PORT", 10000))
+    WEBHOOK_URL = os.environ.get("RENDER_EXTERNAL_URL")
+
     app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    
-    print("✅ Бот запущен!")
-    print("🔗 Правильные ссылки для партнёров (БЕЗ @):")
-    print("  Партнёр 1 → https://t.me/privat_nastenki_bot?start=p1")
-    print("  Партнёр 2 → https://t.me/privat_nastenki_bot?start=p2")
-    print("  Партнёр 3 → https://t.me/privat_nastenki_bot?start=p3")
-    app.run_polling()
 
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+    if WEBHOOK_URL:
+        # Webhook для Render
+        webhook_path = BOT_TOKEN.split(":")[1]
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=PORT,
+            url_path=webhook_path,
+            webhook_url=f"{WEBHOOK_URL}/{webhook_path}"
+        )
+        print(f"✅ Webhook установлен: {WEBHOOK_URL}/{webhook_path}")
+    else:
+        # Для локального запуска
+        import asyncio
+        asyncio.run(app.run_polling())
+        print("✅ Запущен в режиме polling (локально)")
